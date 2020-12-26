@@ -1,8 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) {
+interface SquareProps {
+  onClick: () => void;
+  value: string;
+}
+
+function Square(props: SquareProps) {
   return (
     <button className="square" onClick={props.onClick}>
       {props.value}
@@ -10,8 +15,12 @@ function Square(props) {
   );
 }
 
-class Board extends React.Component {
-  renderSquare(i) {
+interface BoardProps {
+  squares: Array<string>;
+  onClick: (i: number) => void;
+}
+class Board extends React.Component<BoardProps> {
+  public renderSquare(i: number) {
     return (
       <Square
         value={this.props.squares[i]}
@@ -43,21 +52,27 @@ class Board extends React.Component {
   }
 }
 
-class Game extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      history: [
-        {
-          squares: Array(9).fill(null),
-        },
-      ],
-      stepNumber: 0,
-      xIsNext: true,
-    };
-  }
+interface GameProps {}
+interface History {
+  squares: Array<string>;
+}
+interface GameState {
+  history: Array<History>;
+  stepNumber: number;
+  xIsNext: boolean;
+}
+class Game extends React.Component<GameProps, GameState> {
+  public state: GameState = {
+    history: [
+      {
+        squares: Array(9).fill(null),
+      },
+    ],
+    stepNumber: 0,
+    xIsNext: true,
+  };
 
-  handleClick(i) {
+  public handleClick(i: number) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -76,7 +91,7 @@ class Game extends React.Component {
     });
   }
 
-  jumpTo(step) {
+  public jumpTo(step: number) {
     this.setState({
       stepNumber: step,
       xIsNext: step % 2 === 0,
@@ -125,7 +140,7 @@ class Game extends React.Component {
 
 ReactDOM.render(<Game />, document.getElementById('root'));
 
-function calculateWinner(squares) {
+function calculateWinner(squares: Array<string>) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
